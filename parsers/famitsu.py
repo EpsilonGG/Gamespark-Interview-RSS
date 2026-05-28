@@ -2,13 +2,47 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import re
+
 from models.item import Item
+
 
 URL = "https://www.famitsu.com/category/interview/page/1"
 
 headers = {
-    "User-Agent": "Mozilla/5.0"
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/137.0.0.0 Safari/537.36"
+    )
 }
+
+
+def parse_relative_date(text):
+
+    text = text.strip()
+
+    # 例：3日前
+    match = re.search(r"(\d+)日前", text)
+
+    if match:
+        days = int(match.group(1))
+        return datetime.now() - timedelta(days=days)
+
+    # 例：5時間前
+    match = re.search(r"(\d+)時間前", text)
+
+    if match:
+        hours = int(match.group(1))
+        return datetime.now() - timedelta(hours=hours)
+
+    # 例：20分前
+    match = re.search(r"(\d+)分前", text)
+
+    if match:
+        minutes = int(match.group(1))
+        return datetime.now() - timedelta(minutes=minutes)
+
+    return None
 
 
 def parse_famitsu():
@@ -23,28 +57,36 @@ def parse_famitsu():
 
     soup = BeautifulSoup(response.text, "lxml")
 
-    items = soup.select(
+    articles = soup.select(
         "div[class*='PrimaryCard_cardContainer'], "
         "div[class*='SecondaryCard_card']"
     )
 
-    results = []
+    items = []
 
-    for item in items[:10]:
+    for article in articles:
 
         try:
 
             # 标题
-            title_el = item.select_one('a[class*="title"]')
+            title_el = article.select_one(
+                'a[class*="title"]'
+            )
 
             # 摘要
-            desc_el = item.select_one('a[class*="lead"]')
+            desc_el = article.select_one(
+                'a[class*="lead"]'
+            )
 
             # 时间
-            date_el = item.select_one('div[class*="date"] time')
+            date_el = article.select_one(
+                'div[class*="date"] time'
+            )
 
             # 图片
-            img_el = item.select_one('div[class*="media"] img')
+            img_el = article.select_one(
+                'div[class*="media"] img'
+            )
 
             if not title_el:
                 continue
@@ -53,9 +95,8 @@ def parse_famitsu():
             title = title_el.get_text(strip=True)
 
             # 链接
-            link = title_el.get("href", "")
+            link = title_el.get("href", "").strip()
 
-            # 补全相对链接
             if link.startswith("/"):
                 link = "https://www.famitsu.com" + link
 
@@ -63,60 +104,59 @@ def parse_famitsu():
             description = ""
 
             if desc_el:
-                description = desc_el.get_text(strip=True)
+                description = desc_el.get_text(
+                    " ",
+                    strip=True
+                )
 
             # 发布时间
             pub_date = None
 
             if date_el:
 
-                raw_date = date_el.get_text(strip=True)
+                raw_date = date_el.get_text(
+                    strip=True
+                )
 
-                # 处理 "3日前"
-                match = re.search(r"(\d+)日前", raw_date)
-
-                if match:
-
-                    days_ago = int(match.group(1))
-
-                    pub_date = datetime.now() - timedelta(days=days_ago)
-
-                else:
-                    pub_date = datetime.now()
+                pub_date = parse_relative_date(
+                    raw_date
+                )
 
             # 图片
             image_url = ""
 
             if img_el:
 
-                image_url = img_el.get("src", "")
+                image_url = (
+                    img_el.get("src")
+                    or img_el.get("data-src")
+                    or ""
+                )
 
-                # lazyload兼容
-                if not image_url:
-                    image_url = img_el.get("data-src", "")
-
-                # 补全相对路径
                 if image_url.startswith("/"):
-                    image_url = "https://www.famitsu.com" + image_url
+                    image_url = (
+                        "https://www.famitsu.com"
+                        + image_url
+                    )
 
-            # 保存结果
-            results.append({
-
-                "site": "famitsu",
-
-                "title": title,
-
-                "link": link,
-
-                "description": description,
-
-                "pub_date": pub_date,
-
-                "image_url": image_url,
-            })
+            # 保存 Item
+            items.append(
+                Item(
+                    site="Famitsu",
+                    category="interview",
+                    title=title,
+                    link=link,
+                    description=description,
+                    image_url=image_url,
+                    pub_date=pub_date,
+                    tags=[]
+                )
+            )
 
         except Exception as e:
 
-            print("Famitsu parse error:", e)
+            print(
+                f"[Famitsu] Parse error: {e}"
+            )
 
-    return results
+    return items

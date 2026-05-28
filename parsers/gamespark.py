@@ -3,7 +3,9 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from models.item import Item
 
+
 URL = "https://www.gamespark.jp/category/featured/interview/latest/"
+
 
 headers = {
     "User-Agent": "Mozilla/5.0"
@@ -22,95 +24,109 @@ def parse_gamespark():
 
     soup = BeautifulSoup(response.text, "lxml")
 
-    items = soup.select("section.item")
+    articles = soup.select("section.item")
 
-    results = []
+    items = []
 
-    for item in items[:10]:
+    for article in articles[:20]:
 
         try:
 
             # 标题
-            title_el = item.select_one(".title")
+            title_el = article.select_one(".title")
 
             # 摘要
-            summary_el = item.select_one(".summary")
+            desc_el = article.select_one(".summary")
 
             # 链接
-            link_el = item.select_one("a.link")
+            link_el = article.select_one("a.link")
 
-            # 时间
-            date_el = item.select_one("time.date")
+            # 日期
+            date_el = article.select_one("time.date")
 
             # 图片
-            img_el = item.select_one("img.figure")
+            img_el = article.select_one("img.figure")
 
             if not title_el or not link_el:
                 continue
 
+            # 标题
             title = title_el.get_text(strip=True)
 
-            link = link_el.get("href", "")
+            # 链接
+            link = link_el.get("href", "").strip()
 
-            # 补全相对链接
             if link.startswith("/"):
                 link = "https://www.gamespark.jp" + link
 
             # 摘要
             description = ""
 
-            if summary_el:
-                description = summary_el.get_text(strip=True)
+            if desc_el:
+                description = desc_el.get_text(
+                    " ",
+                    strip=True
+                )
 
             # 发布时间
             pub_date = None
 
             if date_el:
 
-                raw_date = date_el.get_text(strip=True)
+                raw_date = (
+                    date_el.get("datetime")
+                    or date_el.get_text(strip=True)
+                )
 
                 try:
-                    pub_date = datetime.strptime(
-                        raw_date,
-                        "%Y.%m.%d %a %H:%M"
+                    pub_date = datetime.fromisoformat(
+                        raw_date.replace("Z", "+00:00")
                     )
 
-                except Exception:
-                    pass
+                except:
+
+                    try:
+                        pub_date = datetime.strptime(
+                            raw_date,
+                            "%Y.%m.%d %a %H:%M"
+                        )
+
+                    except:
+                        pub_date = None
 
             # 图片
             image_url = ""
 
             if img_el:
 
-                image_url = img_el.get("src", "")
+                image_url = (
+                    img_el.get("src")
+                    or img_el.get("data-src")
+                    or ""
+                )
 
-                # lazyload兼容
-                if not image_url:
-                    image_url = img_el.get("data-src", "")
-
-                # 补全相对路径
                 if image_url.startswith("/"):
-                    image_url = "https://www.gamespark.jp" + image_url
+                    image_url = (
+                        "https://www.gamespark.jp"
+                        + image_url
+                    )
 
-            # 保存结果
-            results.append({
-
-                "site": "gamespark",
-
-                "title": title,
-
-                "link": link,
-
-                "description": description,
-
-                "pub_date": pub_date,
-
-                "image_url": image_url,
-            })
+            # 保存 Item
+            items.append(
+                Item(
+                    site="Game*Spark",
+                    category="interview",
+                    title=title,
+                    link=link,
+                    description=description,
+                    image_url=image_url,
+                    pub_date=pub_date,
+                    tags=[]
+                )
+            )
 
         except Exception as e:
 
-            print("Game*Spark parse error:", e)
+            print("[Game*Spark] Parse Error:", e)
 
-    return results
+    return items

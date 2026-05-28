@@ -43,7 +43,16 @@ except Exception as e:
 # =========================
 # 按发布时间排序
 # =========================
+# 统一 datetime（去除时区）
 
+for item in all_items:
+
+    if item.pub_date and item.pub_date.tzinfo:
+
+        item.pub_date = item.pub_date.replace(
+            tzinfo=None
+        )
+        
 all_items.sort(
     key=lambda x: x.pub_date or datetime.min,
     reverse=True

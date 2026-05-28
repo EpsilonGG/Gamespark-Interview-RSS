@@ -8,7 +8,7 @@ from parsers.gamespark import parse_gamespark
 from parsers.fourgamer import parse_fourgamer
 from parsers.famitsu import parse_famitsu
 from parsers.gamewatch import parse_gamewatch
-from parsers.nookgaming import parse_nookgaming
+from parsers.nookgaming_feed import parse_nookgaming_feed
 
 # =========================
 # 创建 RSS Feed
@@ -41,7 +41,7 @@ all_items.extend(parse_famitsu())
 all_items.extend(parse_gamewatch())
 
 # NookGaming
-all_items.extend(parse_nookgaming())
+all_items.extend(parse_nookgaming_feed())
 
 # =========================
 # 按发布时间排序（新→旧）

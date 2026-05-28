@@ -1,2 +1,2 @@
-# Gamespark-Interview-RSS
-RSS for Gamespark's Interview
+# Interview-RSS
+RSS for Games' Interview

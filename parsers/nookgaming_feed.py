@@ -43,17 +43,20 @@ def parse_nookgaming_feed():
 
                 if media and "url" in media[0]:
                     image_url = media[0]["url"]
+                    
+            items.append(
+                Item(
+                    site="NookGaming",
+                    category="interview",
+                    title=title,
+                    link=link,
+                    description=description,
+                    image_url=image_url,
+                    pub_date=pub_date,
+                    tags=[]
+                )
+            )
 
-            items.append({
-                site: "NookGaming",
-                category: "review",
-                title: title,
-                link: link,
-                description: description,
-                image_url: image_url,
-                pub_date: pub_date,
-                tags: []
-            })
 
         except Exception as e:
             print(f"[NookGaming Feed] Error: {e}")

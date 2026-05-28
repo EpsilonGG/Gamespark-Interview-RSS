@@ -1,152 +1,82 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
   <channel>
-    <title>Game*Spark Interview RSS</title>
-    <link>https://www.gamespark.jp/category/featured/interview/latest/</link>
-    <description>Latest interviews from Game*Spark</description>
+    <title>Japanese Game Interview RSS</title>
+    <link>https://www.gamespark.jp/</link>
+    <description>Game interview aggregation feed</description>
     <docs>http://www.rssboard.org/rss-specification</docs>
     <generator>python-feedgen</generator>
     <language>ja</language>
-    <lastBuildDate>Thu, 28 May 2026 03:14:21 +0000</lastBuildDate>
-    <item>
-      <title>罪を負った少女たちが戦うローグライクACT『クライムライト／CRYMELIGHT』プレイレポ【東京ゲームダンジョン12】</title>
-      <link>https://www.gamespark.jp/article/2026/05/20/166679.html</link>
-      <description>『クライスタ』『クライマキナ』に続くフリューのダーク美少女シリーズ新作はローグライクアクション！Read more »</description>
-      <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/20/166679.html</guid>
-      <pubDate>Wed, 20 May 2026 19:15:00 +0000</pubDate>
-    </item>
-    <item>
-      <title>『バニガ2』“泣く泣くボツの紳士的ミニゲーム”やModへの見解……“お紳士向け”最大手、qureate・臼田裕次郎に聞く「セクシーゲーム」の最新事情【インタビュー】</title>
-      <link>https://www.gamespark.jp/article/2026/05/21/166728.html</link>
-      <description>ゲーム市場においても、表現が難しくなってきた昨今、qureateはセクシーなゲームを意欲的に作り続けています。“お紳士向け”最新作である『バニーガーデン2』の開発秘話から、セクシーゲームに取り組む姿勢まで、同社の代表を務める臼田裕次郎氏にお話を伺いました。Read more »</description>
-      <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/21/166728.html</guid>
-      <pubDate>Thu, 21 May 2026 17:00:00 +0000</pubDate>
-    </item>
-    <item>
-      <title>なぜ今、伝説的RPG『OFF』はゲームグッズメーカーの手によって蘇ったのか？ Fangamerメンバーに訊く、こだわりの詰まったリメイク</title>
-      <link>https://www.gamespark.jp/article/2026/05/21/166735.html</link>
-      <description>原作者Mortis Ghostによる新要素、Toby Foxら参加の新録BGM、Fangamerならではのコレクターズエディションまで、その制作の裏側に迫るRead more »</description>
-      <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/21/166735.html</guid>
-      <pubDate>Thu, 21 May 2026 19:05:00 +0000</pubDate>
-    </item>
-    <item>
-      <title>「どのステレオタイプでもない『コーヒートーク』らしい物語が作れた」―発売を迎えた『コーヒートーク トーキョー』開発チームにインタビュー【BitSummit PUNCH】</title>
-      <link>https://www.gamespark.jp/article/2026/05/23/166814.html</link>
-      <description>『コーヒートーク トーキョー』発売！コーラス・ワールドワイドのメンバーにインタビューで開発秘話を聞きました。Read more »</description>
-      <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/23/166814.html</guid>
-      <pubDate>Sat, 23 May 2026 10:25:00 +0000</pubDate>
-    </item>
-    <item>
-      <title>「日本のゲームセンターでハマったクレーンゲームから生まれた」異色のローグライク『ダンジョンクロウラー 幸運ウサギと魔法の爪』開発者インタビュー</title>
-      <link>https://www.gamespark.jp/article/2026/05/24/166829.html</link>
-      <description>個性的なアイデアの原点や今後のアップデートについて聞いています。Read more »</description>
-      <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/24/166829.html</guid>
-      <pubDate>Sun, 24 May 2026 11:00:00 +0000</pubDate>
-    </item>
-    <item>
-      <title>ジャンプだけの忍者が再び参上！『Ninja or Die 2 Die』が生み出す新たな緊張感と進化。プレイレポ&amp;インタビュー【BitSummit PUNCH】</title>
-      <link>https://www.gamespark.jp/article/2026/05/24/166837.html</link>
-      <description>システムもビジュアルもさらに進化したジャンプのみの忍者アクション！Read more »</description>
-      <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/24/166837.html</guid>
-      <pubDate>Sun, 24 May 2026 14:26:00 +0000</pubDate>
-    </item>
-    <item>
-      <title>「カワイイ好きな男性にこそ遊んでほしい」―『コーヒートーク』フォロワーな華やか花屋ADV『あなたに花束を』をいち早く遊んで開発者に訊いてきた【BitSummit PUNCH】</title>
-      <link>https://www.gamespark.jp/article/2026/05/25/166855.html</link>
-      <description>花屋になって花束を作っていくアドベンチャー『あなたに花束を』を、コーラス・ワールドワイドブースよりプレイレポート&amp;インタビュー！Read more »</description>
-      <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/25/166855.html</guid>
-      <pubDate>Mon, 25 May 2026 11:10:00 +0000</pubDate>
-    </item>
-    <item>
-      <title>世界の危機を救うのは、勇者じゃなくて翻訳者？！ローカライズをテーマにしたユニークな『Crazy Localization』試遊レポ＆開発者インタビュー【BitSummit PUNCH】</title>
-      <link>https://www.gamespark.jp/article/2026/05/25/166856.html</link>
-      <description>ゲームのローカライズを担当してくださる翻訳者に、心からの感謝を。Read more »</description>
-      <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/25/166856.html</guid>
-      <pubDate>Mon, 25 May 2026 11:15:00 +0000</pubDate>
-    </item>
-    <item>
-      <title>コロナ禍の「電話で救われた」体験から生まれた―“ボタンを押す意味”を5年弱突き詰めた新作ADV『シュレディンガーズ・コール』【インタビュー】</title>
-      <link>https://www.gamespark.jp/article/2026/05/25/166860.html</link>
-      <description>大賞を受賞した「Game BBQ vol.1」の開催からおよそ5年……待望の本作への思いをお聞きしました！Read more »</description>
-      <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/25/166860.html</guid>
-      <pubDate>Mon, 25 May 2026 12:00:00 +0000</pubDate>
-    </item>
-    <item>
-      <title>「ヒーローになりたい」学生時代の夢が『UNDEFEATED: Genesis』として形に…鍛えていたらムキムキになった開発者へインタビュー【BitSummit PUNCH】</title>
-      <link>https://www.gamespark.jp/article/2026/05/25/166888.html</link>
-      <description>「ヒーローとは何か」を問う3Dアクション『UNDEFEATED: Genesis』の開発者にインタビュー！Read more »</description>
-      <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/25/166888.html</guid>
-      <pubDate>Mon, 25 May 2026 19:10:00 +0000</pubDate>
-    </item>
-    <item>
-      <title>犬x『スイカゲーム』x『Balatro』！？『Dogpile』開発者インタビュー「おバカなところはとことんおバカに、頭を使うところはしっかり頭を使う」【BitSummit PUNCH】</title>
-      <link>https://www.gamespark.jp/article/2026/05/26/166908.html</link>
-      <description>犬の日常的な行動を、カードシナジーと組み合わせたゲームメカニクスに巧みに落とし込んでいます。Read more »</description>
-      <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/26/166908.html</guid>
-      <pubDate>Tue, 26 May 2026 08:00:00 +0000</pubDate>
-    </item>
+    <lastBuildDate>Thu, 28 May 2026 08:19:34 +0000</lastBuildDate>
     <item>
       <title>「もやし」から世界へ―Toge ProductionsのCEO、Kris Antoni氏が語る同社の今【BitSummit PUNCH】</title>
       <link>https://www.gamespark.jp/article/2026/05/26/166923.html</link>
-      <description>インドネシアのゲーム会社が抱く原動力はPS1時代への愛。Read more »</description>
       <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/26/166923.html</guid>
+      <enclosure url="https://www.gamespark.jp/imgs/p/--Ui_hQ-jsVb2izj6wwdXTkJ6QeQBQQDAgEA/1134384.jpg" length="0" type="image/jpeg"/>
       <pubDate>Tue, 26 May 2026 15:00:00 +0000</pubDate>
     </item>
     <item>
       <title>『No, I’m Not a Human』『Mouthwashing』を世に放ったCRITICAL REFLEXのCEOに直撃！既存のルールを壊して尖り続ける哲学と日本への愛【BitSummit PUNCH】</title>
       <link>https://www.gamespark.jp/article/2026/05/26/166928.html</link>
-      <description>CRITICAL REFLEXが「普通のパブリッシャー」であることを捨てた日Read more »</description>
       <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/26/166928.html</guid>
+      <enclosure url="https://www.gamespark.jp/imgs/p/--Ui_hQ-jsVb2izj6wwdXTkJ6QeQBQQDAgEA/1134340.jpg" length="0" type="image/jpeg"/>
       <pubDate>Tue, 26 May 2026 17:00:00 +0000</pubDate>
     </item>
     <item>
       <title>3Dカスタム美少女ゲームシリーズ新作『カスタムロマンスシティ3D3』開始1分で目標達成、目標額35倍超のクラファンから"街に通う恋愛体験"の全貌まで。KISSのYamatoプロデューサーに訊く【開発者インタビュー】</title>
       <link>https://www.gamespark.jp/article/2026/05/26/166931.html</link>
-      <description>3D美少女ゲームシリーズ待望の新作、そのクラファンの裏には意外な考えも。Read more »</description>
       <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/26/166931.html</guid>
+      <enclosure url="https://www.gamespark.jp/imgs/p/--Ui_hQ-jsVb2izj6wwdXTkJ6QeQBQQDAgEA/1134397.png" length="0" type="image/jpeg"/>
       <pubDate>Tue, 26 May 2026 17:30:00 +0000</pubDate>
     </item>
     <item>
       <title>目指したのは「面白くてライトなエクストラクション」。『VOID DIVER : アビスからの脱出』開発者インタビュー【BitSummit PUNCH】</title>
       <link>https://www.gamespark.jp/article/2026/05/26/166936.html</link>
-      <description>本日2026年5月22日から24日まで開催された「BitSummit PUNCH」。展示されていたゲームより『VOID DIVER : アビスからの脱出』の開発者インタビューとなります。Read more »</description>
       <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/26/166936.html</guid>
+      <enclosure url="https://www.gamespark.jp/imgs/p/--Ui_hQ-jsVb2izj6wwdXTkJ6QeQBQQDAgEA/1133184.jpg" length="0" type="image/jpeg"/>
       <pubDate>Tue, 26 May 2026 18:30:00 +0000</pubDate>
     </item>
     <item>
       <title>実写映像と謎解きが融合する奇妙な宿泊体験…村上春樹からの影響も色濃いホラー『The Void Between』プレイレポ&amp;インタビュー【BitSummit PUNCH】</title>
       <link>https://www.gamespark.jp/article/2026/05/26/166940.html</link>
-      <description>開発者自らが主人公を演じる、実写とアートを組み合わせた悪夢からの脱出劇Read more »</description>
       <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/26/166940.html</guid>
+      <enclosure url="https://www.gamespark.jp/imgs/p/--Ui_hQ-jsVb2izj6wwdXTkJ6QeQBQQDAgEA/1134433.jpg" length="0" type="image/jpeg"/>
       <pubDate>Tue, 26 May 2026 19:30:00 +0000</pubDate>
     </item>
     <item>
       <title>日本の名作推理ADVに影響を受けた韓国オタクたちの情熱！サイバーパンク推理ADV『There is NO PLAN B』開発者インタビュー【BitSummit PUNCH】</title>
       <link>https://www.gamespark.jp/article/2026/05/27/166963.html</link>
-      <description>日本の名作推理ゲームから受け継いだ「DNA」。そして日本語訳には「完璧」との自信あり！Read more »</description>
       <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/27/166963.html</guid>
+      <enclosure url="https://www.gamespark.jp/imgs/p/--Ui_hQ-jsVb2izj6wwdXTkJ6QeQBQQDAgEA/1134445.jpg" length="0" type="image/jpeg"/>
       <pubDate>Wed, 27 May 2026 07:30:00 +0000</pubDate>
     </item>
     <item>
       <title>「ミニチュア世界に入りたい」―ゲーム開発者ながらミニチュア作家としても活動、夢を実現させた『Miniature LAND -Four Seasons-』世界に浸る【BitSummit PUNCH】</title>
       <link>https://www.gamespark.jp/article/2026/05/27/166975.html</link>
-      <description>画面の中からでも伝わる手作りのミニチュアのぬくもり。Read more »</description>
       <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/27/166975.html</guid>
+      <enclosure url="https://www.gamespark.jp/imgs/p/--Ui_hQ-jsVb2izj6wwdXTkJ6QeQBQQDAgEA/1133384.jpg" length="0" type="image/jpeg"/>
       <pubDate>Wed, 27 May 2026 13:00:00 +0000</pubDate>
     </item>
     <item>
       <title>ダウナー系女子高生・雨原玲奈とチルな破滅的生活を送る『Rain98』…新たに追加された「ルーズソックス履かせインタラクション」と進捗状況を開発者に訊く【BitSummit PUNCH】</title>
       <link>https://www.gamespark.jp/article/2026/05/27/167001.html</link>
-      <description>1989年から1999年頃の退廃的な日本の香りと、怪しく陰鬱な少女「雨原玲奈」に惹かれた世界中のプレイヤーの期待に応えるべく、開発規模が大きく拡大しています。Read more »</description>
       <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/27/167001.html</guid>
+      <enclosure url="https://www.gamespark.jp/imgs/p/--Ui_hQ-jsVb2izj6wwdXTkJ6QeQBQQDAgEA/1134227.png" length="0" type="image/jpeg"/>
       <pubDate>Wed, 27 May 2026 19:30:00 +0000</pubDate>
     </item>
     <item>
       <title>「ぶいすぽっ！」「ストグラ」などコラボも話題のGALLERIAが評価され続ける理由とは―あえて“ゲーミングPC”と名乗るのをやめた「独自の戦略」 【ゲーミングPCアワード5連覇インタビュー】PR</title>
       <link>https://www.gamespark.jp/article/2026/05/28/167035.html</link>
-      <description>パーツの価格高騰など厳しい市況が続く中でブランドが評価され続ける理由、「ぶいすぽっ！」や『崩壊：スターレイル』など人気ストリーマー・IPとのコラボの裏側、そして「ゲーミングPC」という枠を越えた独自の戦略について、深く掘り下げます。Read more »</description>
       <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/28/167035.html</guid>
+      <enclosure url="https://www.gamespark.jp/imgs/p/--Ui_hQ-jsVb2izj6wwdXTkJ6QeQBQQDAgEA/1133491.png" length="0" type="image/jpeg"/>
       <pubDate>Thu, 28 May 2026 12:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>『ギルティギア』を愛するアメリカ人がTPSホラーに挑む理由―BitSummitでゲームデザイン最優秀賞に輝いた『NIGHTMARE OPERATOR』はどう生まれた？【BitSummit PUNCH】</title>
+      <link>https://www.gamespark.jp/article/2026/05/28/167051.html</link>
+      <guid isPermaLink="true">https://www.gamespark.jp/article/2026/05/28/167051.html</guid>
+      <enclosure url="https://www.gamespark.jp/imgs/p/--Ui_hQ-jsVb2izj6wwdXTkJ6QeQBQQDAgEA/1133508.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Thu, 28 May 2026 17:00:00 +0000</pubDate>
     </item>
   </channel>
 </rss>

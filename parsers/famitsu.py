@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import re
-
+from models.item import Item
 
 URL = "https://www.famitsu.com/category/interview/page/1"
 

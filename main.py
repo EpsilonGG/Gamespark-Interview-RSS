@@ -1,4 +1,7 @@
+import json
+
 from datetime import datetime, timezone
+
 from feedgen.feed import FeedGenerator
 
 from parsers.gamespark import parse_gamespark
@@ -7,10 +10,11 @@ from parsers.famitsu import parse_famitsu
 from parsers.gamewatch import parse_gamewatch
 from parsers.nookgaming_feed import parse_nookgaming_feed
 
+from utils.dedup import remove_duplicates
+
 
 # =========================
 # 统一 datetime
-# 全部转为 UTC aware
 # =========================
 
 def normalize_pub_date(dt):
@@ -18,7 +22,7 @@ def normalize_pub_date(dt):
     if dt is None:
         return None
 
-    # naive datetime -> 直接视为 UTC
+    # naive datetime -> UTC
     if dt.tzinfo is None:
 
         dt = dt.replace(
@@ -33,6 +37,27 @@ def normalize_pub_date(dt):
         )
 
     return dt
+
+
+# =========================
+# 读取 history
+# =========================
+
+HISTORY_FILE = "storage/history.json"
+
+try:
+
+    with open(
+        HISTORY_FILE,
+        "r",
+        encoding="utf-8"
+    ) as f:
+
+        history = json.load(f)
+
+except:
+
+    history = []
 
 
 # =========================
@@ -68,7 +93,14 @@ except Exception as e:
 
 
 # =========================
-# 统一所有 pub_date
+# 去重
+# =========================
+
+all_items = remove_duplicates(all_items)
+
+
+# =========================
+# 统一 pub_date
 # =========================
 
 for item in all_items:
@@ -79,7 +111,7 @@ for item in all_items:
 
 
 # =========================
-# 按发布时间排序
+# 时间排序
 # =========================
 
 all_items.sort(
@@ -94,12 +126,25 @@ all_items.sort(
 
 
 # =========================
-# RSS总条数限制
+# 只保留“新增内容”
+# =========================
+
+new_items = []
+
+for item in all_items:
+
+    if item.link not in history:
+
+        new_items.append(item)
+
+
+# =========================
+# RSS 数量限制
 # =========================
 
 MAX_ITEMS = 50
 
-all_items = all_items[:MAX_ITEMS]
+new_items = new_items[:MAX_ITEMS]
 
 
 # =========================
@@ -109,10 +154,15 @@ all_items = all_items[:MAX_ITEMS]
 fg = FeedGenerator()
 
 fg.title("Japanese Game Media RSS")
-fg.link(href="https://www.gamespark.jp/")
+
+fg.link(
+    href="https://www.gamespark.jp/"
+)
+
 fg.description(
     "Japanese game interview / review aggregation"
 )
+
 fg.language("ja")
 
 
@@ -120,22 +170,29 @@ fg.language("ja")
 # 添加 RSS Item
 # =========================
 
-for item in all_items:
+for item in new_items:
 
     fe = fg.add_entry()
 
-    # 标题
-    fe.title(f"[{item.site}] {item.title}")
+    # title
+    fe.title(
+        f"[{item.site}] {item.title}"
+    )
 
-    # 链接
-    fe.link(href=item.link)
+    # link
+    fe.link(
+        href=item.link
+    )
 
     # guid
     fe.guid(item.link)
 
-    # 发布时间
+    # pubDate
     if item.pub_date:
-        fe.pubDate(item.pub_date)
+
+        fe.pubDate(
+            item.pub_date
+        )
 
     # description
     description_html = ""
@@ -148,11 +205,15 @@ for item in all_items:
 
     if item.description:
 
-        description_html += item.description
+        description_html += (
+            item.description
+        )
 
-    fe.description(description_html)
+    fe.description(
+        description_html
+    )
 
-    # enclosure（部分 RSS 阅读器显示缩略图）
+    # enclosure
     if item.image_url:
 
         fe.enclosure(
@@ -168,5 +229,48 @@ for item in all_items:
 
 fg.rss_file("rss.xml")
 
-print("RSS generated successfully!")
-print(f"Total items: {len(all_items)}")
+
+# =========================
+# 更新 history
+# =========================
+
+for item in new_items:
+
+    history.append(
+        item.link
+    )
+
+
+# =========================
+# 保存 history
+# =========================
+
+with open(
+    HISTORY_FILE,
+    "w",
+    encoding="utf-8"
+) as f:
+
+    json.dump(
+        history,
+        f,
+        ensure_ascii=False,
+        indent=2
+    )
+
+
+# =========================
+# 输出日志
+# =========================
+
+print(
+    "RSS generated successfully!"
+)
+
+print(
+    f"Total items fetched: {len(all_items)}"
+)
+
+print(
+    f"New items: {len(new_items)}"
+)

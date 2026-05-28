@@ -40,10 +40,15 @@ def normalize_pub_date(dt):
 
 
 # =========================
-# 读取 history
+# history 文件
 # =========================
 
 HISTORY_FILE = "storage/history.json"
+
+
+# =========================
+# 读取 history
+# =========================
 
 try:
 
@@ -111,7 +116,7 @@ for item in all_items:
 
 
 # =========================
-# 时间排序
+# 按时间排序
 # =========================
 
 all_items.sort(
@@ -126,7 +131,7 @@ all_items.sort(
 
 
 # =========================
-# 只保留“新增内容”
+# 找出新增内容
 # =========================
 
 new_items = []
@@ -139,7 +144,15 @@ for item in all_items:
 
 
 # =========================
-# RSS 数量限制
+# 保存完整新增列表
+# （用于 history）
+# =========================
+
+all_new_items = new_items.copy()
+
+
+# =========================
+# RSS 输出数量限制
 # =========================
 
 MAX_ITEMS = 50
@@ -174,12 +187,12 @@ for item in new_items:
 
     fe = fg.add_entry()
 
-    # title
+    # 标题
     fe.title(
         f"[{item.site}] {item.title}"
     )
 
-    # link
+    # 链接
     fe.link(
         href=item.link
     )
@@ -187,7 +200,7 @@ for item in new_items:
     # guid
     fe.guid(item.link)
 
-    # pubDate
+    # 发布时间
     if item.pub_date:
 
         fe.pubDate(
@@ -232,9 +245,10 @@ fg.rss_file("rss.xml")
 
 # =========================
 # 更新 history
+# （注意：保存全部新增）
 # =========================
 
-for item in new_items:
+for item in all_new_items:
 
     history.append(
         item.link
@@ -272,5 +286,9 @@ print(
 )
 
 print(
-    f"New items: {len(new_items)}"
+    f"New items found: {len(all_new_items)}"
+)
+
+print(
+    f"RSS items output: {len(new_items)}"
 )

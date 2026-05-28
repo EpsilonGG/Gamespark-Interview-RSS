@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from feedgen.feed import FeedGenerator
 
 from parsers.gamespark import parse_gamespark
@@ -6,6 +6,27 @@ from parsers.fourgamer import parse_fourgamer
 from parsers.famitsu import parse_famitsu
 from parsers.gamewatch import parse_gamewatch
 from parsers.nookgaming_feed import parse_nookgaming_feed
+
+
+# =========================
+# 统一 datetime
+# aware -> UTC naive
+# =========================
+
+def normalize_pub_date(dt):
+
+    if dt is None:
+        return None
+
+    # aware datetime
+    if dt.tzinfo is not None:
+
+        dt = (
+            dt.astimezone(timezone.utc)
+            .replace(tzinfo=None)
+        )
+
+    return dt
 
 
 # =========================
@@ -41,18 +62,20 @@ except Exception as e:
 
 
 # =========================
-# 按发布时间排序
+# 统一所有 pub_date
 # =========================
-# 统一 datetime（去除时区）
 
 for item in all_items:
 
-    if item.pub_date and item.pub_date.tzinfo:
+    item.pub_date = normalize_pub_date(
+        item.pub_date
+    )
 
-        item.pub_date = item.pub_date.replace(
-            tzinfo=None
-        )
-        
+
+# =========================
+# 按发布时间排序
+# =========================
+
 all_items.sort(
     key=lambda x: x.pub_date or datetime.min,
     reverse=True
@@ -76,7 +99,9 @@ fg = FeedGenerator()
 
 fg.title("Japanese Game Media RSS")
 fg.link(href="https://www.gamespark.jp/")
-fg.description("Japanese game interview / review aggregation")
+fg.description(
+    "Japanese game interview / review aggregation"
+)
 fg.language("ja")
 
 

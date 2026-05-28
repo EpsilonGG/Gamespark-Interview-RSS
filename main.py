@@ -5,7 +5,7 @@ from parsers.gamespark import parse_gamespark
 from parsers.fourgamer import parse_fourgamer
 from parsers.famitsu import parse_famitsu
 from parsers.gamewatch import parse_gamewatch
-from parsers.nookgaming import parse_nookgaming_feed
+from parsers.nookgaming_feed import parse_nookgaming_feed
 
 
 # =========================

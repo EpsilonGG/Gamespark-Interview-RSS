@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
-
+from models.item import Item
 
 URL = "https://www.4gamer.net/indextop/all_interview_1.html"
 

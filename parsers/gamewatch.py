@@ -2,9 +2,12 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import re
+
 from models.item import Item
 
+
 URL = "https://game.watch.impress.co.jp/docs/interview/"
+
 
 headers = {
     "User-Agent": "Mozilla/5.0"
@@ -23,30 +26,40 @@ def parse_gamewatch():
 
     soup = BeautifulSoup(response.text, "lxml")
 
-    items = soup.select(
+    articles = soup.select(
         "section.list ul.list-02 li.item.interview"
     )
 
-    items  = []
+    items = []
 
-    for item in items[:10]:
+    for article in articles[:10]:
 
         try:
 
             # 标题
-            title_el = item.select_one('p[class*="title"]')
+            title_el = article.select_one(
+                'p[class*="title"]'
+            )
 
             # 摘要
-            desc_el = item.select_one('p[class*="outline"]')
+            desc_el = article.select_one(
+                'p[class*="outline"]'
+            )
 
             # 链接
-            link_el = item.select_one('p[class*="title"] a')
+            link_el = article.select_one(
+                'p[class*="title"] a'
+            )
 
             # 时间
-            date_el = item.select_one('p[class*="date"]')
+            date_el = article.select_one(
+                'p[class*="date"]'
+            )
 
             # 图片
-            img_el = item.select_one('div[class*="image"] a img')
+            img_el = article.select_one(
+                'div[class*="image"] a img'
+            )
 
             if not title_el or not link_el:
                 continue
@@ -59,22 +72,28 @@ def parse_gamewatch():
 
             # 补全相对路径
             if link.startswith("/"):
-                link = "https://game.watch.impress.co.jp" + link
+                link = (
+                    "https://game.watch.impress.co.jp"
+                    + link
+                )
 
             # 摘要
             description = ""
 
             if desc_el:
-                description = desc_el.get_text(strip=True)
+                description = desc_el.get_text(
+                    strip=True
+                )
 
             # 发布时间
             pub_date = None
 
             if date_el:
 
-                raw_date = date_el.get_text(strip=True)
+                raw_date = date_el.get_text(
+                    strip=True
+                )
 
-                # 提取 (2026/5/28)
                 match = re.search(
                     r"\((\d{4})/(\d{1,2})/(\d{1,2})\)",
                     raw_date
@@ -97,11 +116,17 @@ def parse_gamewatch():
 
             if img_el:
 
-                image_url = img_el.get("src", "")
+                image_url = img_el.get(
+                    "src",
+                    ""
+                )
 
                 # lazyload兼容
                 if not image_url:
-                    image_url = img_el.get("data-src", "")
+                    image_url = img_el.get(
+                        "data-src",
+                        ""
+                    )
 
                 # 补全相对路径
                 if image_url.startswith("/"):
@@ -111,20 +136,24 @@ def parse_gamewatch():
                     )
 
             # 保存结果
-        items.append(
-            Item(
-                site="GameWatch",
-                category="interview",
-                title=title,
-                link=link,
-                description=description,
-                image_url=image_url,
-                pub_date=pub_date,
-                tags=[]
+            items.append(
+                Item(
+                    site="GameWatch",
+                    category="interview",
+                    title=title,
+                    link=link,
+                    description=description,
+                    image_url=image_url,
+                    pub_date=pub_date,
+                    tags=[]
+                )
             )
-        )
+
         except Exception as e:
 
-            print("Game Watch parse error:", e)
+            print(
+                "Game Watch parse error:",
+                e
+            )
 
     return items

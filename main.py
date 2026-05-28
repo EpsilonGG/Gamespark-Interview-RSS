@@ -1,69 +1,78 @@
-from email.utils import format_datetime
 from datetime import datetime
 from feedgen.feed import FeedGenerator
-from email.utils import format_datetime
 
-# 导入 parser
 from parsers.gamespark import parse_gamespark
 from parsers.fourgamer import parse_fourgamer
 from parsers.famitsu import parse_famitsu
 from parsers.gamewatch import parse_gamewatch
-from parsers.nookgaming_feed import parse_nookgaming_feed
-
-# =========================
-# 创建 RSS Feed
-# =========================
-
-fg = FeedGenerator()
-
-fg.title("Japanese Game Interview RSS")
-fg.link(href="https://www.gamespark.jp/")
-fg.description("Game interview aggregation feed")
-fg.language("ja")
+from parsers.nookgaming import parse_nookgaming_feed
 
 
 # =========================
-# 收集所有网站数据
+# 收集所有站点内容
 # =========================
 
 all_items = []
 
-# Game*Spark
-all_items.extend(parse_gamespark())
+try:
+    all_items.extend(parse_gamespark())
+except Exception as e:
+    print("[GameSpark] Error:", e)
 
-# 4Gamer
-all_items.extend(parse_fourgamer())
+try:
+    all_items.extend(parse_fourgamer())
+except Exception as e:
+    print("[4Gamer] Error:", e)
 
-# Famitsu 
-all_items.extend(parse_famitsu())
+try:
+    all_items.extend(parse_famitsu())
+except Exception as e:
+    print("[Famitsu] Error:", e)
 
-# Game Watch 
-all_items.extend(parse_gamewatch())
+try:
+    all_items.extend(parse_gamewatch())
+except Exception as e:
+    print("[GameWatch] Error:", e)
 
-# NookGaming
-all_items.extend(parse_nookgaming_feed())
+try:
+    all_items.extend(parse_nookgaming_feed())
+except Exception as e:
+    print("[NookGaming] Error:", e)
+
 
 # =========================
-# 按发布时间排序（新→旧）
+# 按发布时间排序
 # =========================
 
 all_items.sort(
-    key=lambda x: x.get("pub_date") or datetime.min,
+    key=lambda x: x.pub_date or datetime.min,
     reverse=True
 )
 
 
 # =========================
-# 限制 RSS 条数
+# RSS总条数限制
 # =========================
 
-MAX_ITEMS = 10
+MAX_ITEMS = 50
 
 all_items = all_items[:MAX_ITEMS]
 
 
 # =========================
-# 生成 RSS Item
+# 创建 RSS
+# =========================
+
+fg = FeedGenerator()
+
+fg.title("Japanese Game Media RSS")
+fg.link(href="https://www.gamespark.jp/")
+fg.description("Japanese game interview / review aggregation")
+fg.language("ja")
+
+
+# =========================
+# 添加 RSS Item
 # =========================
 
 for item in all_items:
@@ -71,31 +80,35 @@ for item in all_items:
     fe = fg.add_entry()
 
     # 标题
-    site_name = item.get("site", "").upper()
-    rss_title = f"[{site_name}] {item['title']}"
-    fe.title(rss_title)
+    fe.title(f"[{item.site}] {item.title}")
 
     # 链接
-    fe.link(href=item["link"])
+    fe.link(href=item.link)
 
-    # GUID（防止重复推送）
-    fe.guid(item["link"], permalink=True)
-
-    # description
-    # Telegram 推荐留空
-    fe.description("")
+    # guid
+    fe.guid(item.link)
 
     # 发布时间
-    if item.get("pub_date"):
-        fe.pubDate(
-            format_datetime(item["pub_date"])
+    if item.pub_date:
+        fe.pubDate(item.pub_date)
+
+    # description
+    description_html = ""
+
+    if item.image_url:
+        description_html += (
+            f'<img src="{item.image_url}"><br>'
         )
 
-    # 图片（TG / Feedly 可识别）
-    if item.get("image_url"):
+    if item.description:
+        description_html += item.description
 
+    fe.description(description_html)
+
+    # enclosure（部分 RSS 阅读器显示缩略图）
+    if item.image_url:
         fe.enclosure(
-            item["image_url"],
+            item.image_url,
             0,
             "image/jpeg"
         )
@@ -105,9 +118,7 @@ for item in all_items:
 # 输出 rss.xml
 # =========================
 
-rss_data = fg.rss_str(pretty=True)
+fg.rss_file("rss.xml")
 
-with open("rss.xml", "wb") as f:
-    f.write(rss_data)
-
-print("rss.xml generated successfully")
+print("RSS generated successfully!")
+print(f"Total items: {len(all_items)}")

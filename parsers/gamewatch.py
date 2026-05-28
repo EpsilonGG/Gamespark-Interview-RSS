@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import re
-
+from models.item import Item
 
 URL = "https://game.watch.impress.co.jp/docs/interview/"
 

@@ -1,7 +1,7 @@
 import feedparser
 from bs4 import BeautifulSoup
 from datetime import datetime
-
+from models.item import Item
 
 FEED_URL = "https://www.nookgaming.com/feed/"
 
@@ -45,14 +45,14 @@ def parse_nookgaming_feed():
                     image_url = media[0]["url"]
 
             items.append({
-                "site": "NookGaming",
-                "category": "review",
-                "title": title,
-                "link": link,
-                "description": description,
-                "image_url": image_url,
-                "pub_date": pub_date,
-                "tags": []
+                site: "NookGaming",
+                category: "review",
+                title: title,
+                link: link,
+                description: description,
+                image_url: image_url,
+                pub_date: pub_date,
+                tags: []
             })
 
         except Exception as e:

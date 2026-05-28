@@ -1,4 +1,3 @@
-```python
 from feedgen.feed import FeedGenerator
 from email.utils import format_datetime
 
@@ -98,4 +97,3 @@ with open("rss.xml", "wb") as f:
     f.write(rss_data)
 
 print("rss.xml generated successfully")
-```

@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from models.item import Item
 
+
 URL = "https://www.4gamer.net/indextop/all_interview_1.html"
 
 headers = {
@@ -22,25 +23,31 @@ def parse_fourgamer():
 
     soup = BeautifulSoup(response.text, "lxml")
 
-    items = soup.select('div[class*="V2_article_container"]')
+    articles = soup.select(
+        'div[class*="V2_article_container"]'
+    )
 
-    results = []
+    items = []
 
-    for item in items[:10]:
+    for article in articles:
 
         try:
 
             # 标题
-            title_el = item.select_one("h2 a")
+            title_el = article.select_one("h2 a")
 
             # 摘要
-            desc_el = item.select_one('p[class*="lead_container"]')
+            desc_el = article.select_one(
+                'p[class*="lead_container"]'
+            )
 
             # 时间
-            date_el = item.select_one(".timestamp")
+            date_el = article.select_one(".timestamp")
 
             # 图片
-            img_el = item.select_one('img[class*="img_right_top"]')
+            img_el = article.select_one(
+                'img[class*="img_right_top"]'
+            )
 
             if not title_el:
                 continue
@@ -49,9 +56,8 @@ def parse_fourgamer():
             title = title_el.get_text(strip=True)
 
             # 链接
-            link = title_el.get("href", "")
+            link = title_el.get("href", "").strip()
 
-            # 补全相对链接
             if link.startswith("/"):
                 link = "https://www.4gamer.net" + link
 
@@ -59,7 +65,10 @@ def parse_fourgamer():
             description = ""
 
             if desc_el:
-                description = desc_el.get_text(strip=True)
+                description = desc_el.get_text(
+                    " ",
+                    strip=True
+                )
 
             # 发布时间
             pub_date = None
@@ -75,41 +84,41 @@ def parse_fourgamer():
                     )
 
                 except Exception:
-                    pass
+                    pub_date = None
 
             # 图片
             image_url = ""
 
             if img_el:
 
-                image_url = img_el.get("src", "")
+                image_url = (
+                    img_el.get("src")
+                    or img_el.get("data-src")
+                    or ""
+                )
 
-                # lazyload兼容
-                if not image_url:
-                    image_url = img_el.get("data-src", "")
-
-                # 补全相对路径
                 if image_url.startswith("/"):
-                    image_url = "https://www.4gamer.net" + image_url
+                    image_url = (
+                        "https://www.4gamer.net"
+                        + image_url
+                    )
 
-            # 保存结果
-            results.append({
-
-                "site": "4gamer",
-
-                "title": title,
-
-                "link": link,
-
-                "description": description,
-
-                "pub_date": pub_date,
-
-                "image_url": image_url,
-            })
+            # 保存 Item
+            items.append(
+                Item(
+                    site="4Gamer",
+                    category="interview",
+                    title=title,
+                    link=link,
+                    description=description,
+                    image_url=image_url,
+                    pub_date=pub_date,
+                    tags=[]
+                )
+            )
 
         except Exception as e:
 
-            print("4Gamer parse error:", e)
+            print(f"[4Gamer] Error: {e}")
 
-    return results
+    return items

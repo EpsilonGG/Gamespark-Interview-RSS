@@ -1,4 +1,3 @@
-```yaml
 name: Update RSS
 
 on:
@@ -62,4 +61,3 @@ jobs:
           git diff --cached --quiet || git commit -m "Update RSS and history"
 
           git push
-```

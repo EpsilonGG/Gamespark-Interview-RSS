@@ -1,3 +1,5 @@
+from email.utils import format_datetime
+from datetime import datetime
 from feedgen.feed import FeedGenerator
 from email.utils import format_datetime
 
@@ -36,7 +38,7 @@ all_items.extend(parse_fourgamer())
 # =========================
 
 all_items.sort(
-    key=lambda x: x.get("pub_date") or 0,
+    key=lambda x: x.get("pub_date") or datetime.min,
     reverse=True
 )
 

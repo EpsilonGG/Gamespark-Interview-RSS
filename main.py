@@ -1,74 +1,96 @@
-import requests
-from bs4 import BeautifulSoup
+```python
 from feedgen.feed import FeedGenerator
-from datetime import datetime
 from email.utils import format_datetime
 
-URL = "https://www.gamespark.jp/category/featured/interview/latest/"
+# 导入 parser
+from parsers.gamespark import parse_gamespark
+from parsers.fourgamer import parse_fourgamer
 
-headers = {
-    "User-Agent": "Mozilla/5.0"
-}
 
-response = requests.get(URL, headers=headers, timeout=30)
-response.raise_for_status()
-
-soup = BeautifulSoup(response.text, "lxml")
-
-items = soup.select("section.item")
+# =========================
+# 创建 RSS Feed
+# =========================
 
 fg = FeedGenerator()
 
-fg.title("Game*Spark Interview RSS")
-fg.link(href=URL)
-fg.description("Latest interviews from Game*Spark")
+fg.title("Japanese Game Interview RSS")
+fg.link(href="https://www.gamespark.jp/")
+fg.description("Game interview aggregation feed")
 fg.language("ja")
 
-for item in items[:20]:
 
-    title_el = item.select_one(".title")
-    link_el = item.select_one("a.link")
-    summary_el = item.select_one(".summary")
-    date_el = item.select_one("time.date")
+# =========================
+# 收集所有网站数据
+# =========================
 
-    if not title_el or not link_el:
-        continue
+all_items = []
 
-    title = title_el.get_text(strip=True)
+# Game*Spark
+all_items.extend(parse_gamespark())
 
-    link = link_el.get("href", "")
+# 4Gamer
+all_items.extend(parse_fourgamer())
 
-    if link.startswith("/"):
-        link = "https://www.gamespark.jp" + link
 
-    summary = ""
-    if summary_el:
-        summary = summary_el.get_text(strip=True)
+# =========================
+# 按发布时间排序（新→旧）
+# =========================
 
-    pub_date = None
+all_items.sort(
+    key=lambda x: x.get("pub_date") or 0,
+    reverse=True
+)
 
-    if date_el:
-        raw_date = date_el.get_text(strip=True)
 
-        try:
-            # 示例：
-            # 2026.5.28 Thu 10:00
-            pub_date = datetime.strptime(
-                raw_date,
-                "%Y.%m.%d %a %H:%M"
-            )
-        except:
-            pass
+# =========================
+# 限制 RSS 条数
+# =========================
+
+MAX_ITEMS = 10
+
+all_items = all_items[:MAX_ITEMS]
+
+
+# =========================
+# 生成 RSS Item
+# =========================
+
+for item in all_items:
 
     fe = fg.add_entry()
 
-    fe.title(title)
-    fe.link(href=link)
-    fe.description(summary)
-    fe.guid(link, permalink=True)
+    # 标题
+    fe.title(item["title"])
 
-    if pub_date:
-        fe.pubDate(format_datetime(pub_date))
+    # 链接
+    fe.link(href=item["link"])
+
+    # GUID（防止重复推送）
+    fe.guid(item["link"], permalink=True)
+
+    # description
+    # Telegram 推荐留空
+    fe.description("")
+
+    # 发布时间
+    if item.get("pub_date"):
+        fe.pubDate(
+            format_datetime(item["pub_date"])
+        )
+
+    # 图片（TG / Feedly 可识别）
+    if item.get("image_url"):
+
+        fe.enclosure(
+            item["image_url"],
+            0,
+            "image/jpeg"
+        )
+
+
+# =========================
+# 输出 rss.xml
+# =========================
 
 rss_data = fg.rss_str(pretty=True)
 
@@ -76,3 +98,4 @@ with open("rss.xml", "wb") as f:
     f.write(rss_data)
 
 print("rss.xml generated successfully")
+```

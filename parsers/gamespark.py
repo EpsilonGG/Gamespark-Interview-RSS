@@ -1,4 +1,3 @@
-```python id="g4vjv0"
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -115,4 +114,3 @@ def parse_gamespark():
             print("Game*Spark parse error:", e)
 
     return results
-```

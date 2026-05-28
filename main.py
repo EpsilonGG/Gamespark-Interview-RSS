@@ -6,7 +6,7 @@ from email.utils import format_datetime
 # 导入 parser
 from parsers.gamespark import parse_gamespark
 from parsers.fourgamer import parse_fourgamer
-
+from parsers.famitsu import parse_famitsu
 
 # =========================
 # 创建 RSS Feed
@@ -32,6 +32,8 @@ all_items.extend(parse_gamespark())
 # 4Gamer
 all_items.extend(parse_fourgamer())
 
+# Famitsu 
+all_items.extend(parse_famitsu())
 
 # =========================
 # 按发布时间排序（新→旧）

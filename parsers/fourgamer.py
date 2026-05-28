@@ -1,4 +1,3 @@
-```python id="5p0gcq"
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -114,4 +113,3 @@ def parse_fourgamer():
             print("4Gamer parse error:", e)
 
     return results
-```

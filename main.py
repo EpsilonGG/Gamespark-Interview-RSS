@@ -7,6 +7,7 @@ from email.utils import format_datetime
 from parsers.gamespark import parse_gamespark
 from parsers.fourgamer import parse_fourgamer
 from parsers.famitsu import parse_famitsu
+from parsers.gamewatch import parse_gamewatch
 
 # =========================
 # 创建 RSS Feed
@@ -34,6 +35,9 @@ all_items.extend(parse_fourgamer())
 
 # Famitsu 
 all_items.extend(parse_famitsu())
+
+# Game Watch 
+all_items.extend(parse_gamewatch())
 
 # =========================
 # 按发布时间排序（新→旧）
@@ -63,7 +67,9 @@ for item in all_items:
     fe = fg.add_entry()
 
     # 标题
-    fe.title(item["title"])
+    site_name = item.get("site", "").upper()
+    rss_title = f"[{site_name}] {item['title']}"
+    fe.title(rss_title)
 
     # 链接
     fe.link(href=item["link"])

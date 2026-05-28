@@ -10,7 +10,7 @@ from parsers.nookgaming_feed import parse_nookgaming_feed
 
 # =========================
 # 统一 datetime
-# aware -> UTC naive
+# 全部转为 UTC aware
 # =========================
 
 def normalize_pub_date(dt):
@@ -18,12 +18,18 @@ def normalize_pub_date(dt):
     if dt is None:
         return None
 
-    # aware datetime
-    if dt.tzinfo is not None:
+    # naive datetime -> 直接视为 UTC
+    if dt.tzinfo is None:
 
-        dt = (
-            dt.astimezone(timezone.utc)
-            .replace(tzinfo=None)
+        dt = dt.replace(
+            tzinfo=timezone.utc
+        )
+
+    # aware datetime -> 转 UTC
+    else:
+
+        dt = dt.astimezone(
+            timezone.utc
         )
 
     return dt
@@ -77,7 +83,12 @@ for item in all_items:
 # =========================
 
 all_items.sort(
-    key=lambda x: x.pub_date or datetime.min,
+    key=lambda x: (
+        x.pub_date
+        or datetime.min.replace(
+            tzinfo=timezone.utc
+        )
+    ),
     reverse=True
 )
 
@@ -130,17 +141,20 @@ for item in all_items:
     description_html = ""
 
     if item.image_url:
+
         description_html += (
             f'<img src="{item.image_url}"><br>'
         )
 
     if item.description:
+
         description_html += item.description
 
     fe.description(description_html)
 
     # enclosure（部分 RSS 阅读器显示缩略图）
     if item.image_url:
+
         fe.enclosure(
             item.image_url,
             0,

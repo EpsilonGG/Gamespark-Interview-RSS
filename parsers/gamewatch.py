@@ -27,7 +27,7 @@ def parse_gamewatch():
         "section.list ul.list-02 li.item.interview"
     )
 
-    results = []
+    items  = []
 
     for item in items[:10]:
 
@@ -111,23 +111,20 @@ def parse_gamewatch():
                     )
 
             # 保存结果
-            results.append({
-
-                "site": "gamewatch",
-
-                "title": title,
-
-                "link": link,
-
-                "description": description,
-
-                "pub_date": pub_date,
-
-                "image_url": image_url,
-            })
-
+        items.append(
+            Item(
+                site="GameWatch",
+                category="interview",
+                title=title,
+                link=link,
+                description=description,
+                image_url=image_url,
+                pub_date=pub_date,
+                tags=[]
+            )
+        )
         except Exception as e:
 
             print("Game Watch parse error:", e)
 
-    return results
+    return items

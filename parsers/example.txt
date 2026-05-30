@@ -1,0 +1,66 @@
+import requests
+
+from bs4 import BeautifulSoup
+from datetime import datetime
+
+from models.item import Item
+
+
+URL = "https://example.com"
+
+
+def parse():
+
+    response = requests.get(
+        URL,
+        timeout=30
+    )
+
+    response.raise_for_status()
+
+    soup = BeautifulSoup(
+        response.text,
+        "lxml"
+    )
+
+    items = []
+
+    for article in soup.select(
+        "YOUR_SELECTOR"
+    ):
+
+        try:
+
+            title = ""
+            link = ""
+            description = ""
+            image_url = ""
+
+            pub_date = None
+
+            # 在这里完成：
+            # 编码处理
+            # 时间解析
+            # HTML清洗
+            # 内容清洗
+
+            items.append(
+
+                Item(
+                    site="Site Name",
+                    category="interview",
+                    title=title,
+                    link=link,
+                    description=description,
+                    image_url=image_url,
+                    pub_date=pub_date,
+                    tags=[]
+                )
+
+            )
+
+        except Exception as e:
+
+            print(e)
+
+    return items

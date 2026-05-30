@@ -93,20 +93,6 @@ for item in all_items:
             tzinfo=timezone.utc
         )
         
-print("===== DATETIME DEBUG =====")
-
-print(
-    "4Gamer dated:",
-    sum(
-        1
-        for x in all_items
-        if x.site == "4Gamer"
-        and x.pub_date is not None
-    )
-)
-
-print("===== END =====")
-print()
 
 
 # =====================

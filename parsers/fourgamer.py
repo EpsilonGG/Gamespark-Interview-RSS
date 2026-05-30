@@ -21,10 +21,8 @@ def parse_fourgamer():
 
     response.raise_for_status()
 
-    print(f"[4Gamer] encoding = {response.encoding}")
-    print(f"[4Gamer] apparent_encoding = {response.apparent_encoding}")
-
-    response.encoding = response.apparent_encoding
+    # 4Gamer 使用 EUC-JP 编码
+    response.encoding = "euc_jp"
 
     soup = BeautifulSoup(
         response.text,
@@ -43,7 +41,6 @@ def parse_fourgamer():
 
             # 标题
             title_el = article.select_one("h2 a")
-            
 
             # 摘要
             desc_el = article.select_one(
@@ -62,14 +59,21 @@ def parse_fourgamer():
                 continue
 
             # 标题
-            title = title_el.get_text(strip=True)
-            print(f"[4Gamer] title = {title}")
+            title = title_el.get_text(
+                strip=True
+            )
 
             # 链接
-            link = title_el.get("href", "").strip()
+            link = title_el.get(
+                "href",
+                ""
+            ).strip()
 
             if link.startswith("/"):
-                link = "https://www.4gamer.net" + link
+                link = (
+                    "https://www.4gamer.net"
+                    + link
+                )
 
             # 摘要
             description = ""
@@ -80,20 +84,24 @@ def parse_fourgamer():
                     strip=True
                 )
 
-            # 发布时间
+            # 發布时间
             pub_date = None
 
             if date_el:
 
-                raw_date = date_el.get_text(strip=True)
+                raw_date = date_el.get_text(
+                    strip=True
+                )
 
                 try:
+
                     pub_date = datetime.strptime(
                         raw_date,
                         "%Y/%m/%d %H:%M"
                     )
 
                 except Exception:
+
                     pub_date = None
 
             # 图片
@@ -108,12 +116,12 @@ def parse_fourgamer():
                 )
 
                 if image_url.startswith("/"):
+
                     image_url = (
                         "https://www.4gamer.net"
                         + image_url
                     )
 
-            # 保存 Item
             items.append(
                 Item(
                     site="4Gamer",
@@ -129,6 +137,8 @@ def parse_fourgamer():
 
         except Exception as e:
 
-            print(f"[4Gamer] Error: {e}")
+            print(
+                f"[4Gamer] Error: {e}"
+            )
 
     return items

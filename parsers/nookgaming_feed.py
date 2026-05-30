@@ -1,133 +1,113 @@
-import re
+from datetime import datetime
 
-import requests
+import feedparser
 
 from bs4 import BeautifulSoup
-from datetime import datetime
 
 from models.item import Item
 
 
-URL = "https://game.watch.impress.co.jp/docs/interview/"
+FEED_URL = "https://www.nookgaming.com/feed/"
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0"
-}
+
+def clean_html(html: str) -> str:
+
+    soup = BeautifulSoup(
+        html,
+        "html.parser"
+    )
+
+    return soup.get_text(
+        " ",
+        strip=True
+    )
 
 
 def parse():
 
-    response = requests.get(
-        URL,
-        headers=HEADERS,
-        timeout=30
-    )
-
-    response.raise_for_status()
-
-    soup = BeautifulSoup(
-        response.text,
-        "lxml"
+    feed = feedparser.parse(
+        FEED_URL
     )
 
     items = []
 
-    articles = soup.select(
-        "section.list ul.list-02 li.item.interview"
-    )
-
-    for article in articles:
+    for entry in feed.entries:
 
         try:
 
-            title_el = article.select_one(
-                'p[class*="title"]'
-            )
-
-            link_el = article.select_one(
-                'p[class*="title"] a'
-            )
-
-            if not title_el or not link_el:
-                continue
-
-            title = title_el.get_text(
-                " ",
-                strip=True
-            )
-
-            link = (
-                link_el.get("href", "")
+            title = (
+                entry.get(
+                    "title",
+                    ""
+                )
                 .strip()
             )
 
-            if link.startswith("/"):
-                link = (
-                    "https://game.watch.impress.co.jp"
-                    + link
+            link = (
+                entry.get(
+                    "link",
+                    ""
                 )
-
-            desc_el = article.select_one(
-                'p[class*="outline"]'
+                .strip()
             )
 
-            description = (
-                desc_el.get_text(
-                    " ",
-                    strip=True
+            description = ""
+
+            if entry.get("summary"):
+
+                description = clean_html(
+                    entry.summary
                 )
-                if desc_el
-                else ""
-            )
-
-            image_url = ""
-
-            img_el = article.select_one(
-                'div[class*="image"] img'
-            )
-
-            if img_el:
-
-                image_url = (
-                    img_el.get("src")
-                    or img_el.get("data-src")
-                    or ""
-                )
-
-                if image_url.startswith("/"):
-                    image_url = (
-                        "https://game.watch.impress.co.jp"
-                        + image_url
-                    )
 
             pub_date = None
 
-            date_el = article.select_one(
-                'p[class*="date"]'
-            )
+            if entry.get(
+                "published_parsed"
+            ):
 
-            if date_el:
-
-                raw_date = date_el.get_text(
-                    strip=True
+                pub_date = datetime(
+                    *entry.published_parsed[:6]
                 )
 
-                match = re.search(
-                    r"\((\d{4})/(\d{1,2})/(\d{1,2})\)",
-                    raw_date
+            image_url = ""
+
+            if entry.get(
+                "media_content"
+            ):
+
+                media = (
+                    entry.media_content
                 )
 
-                if match:
+                if (
+                    media
+                    and media[0].get("url")
+                ):
 
-                    pub_date = datetime(
-                        int(match.group(1)),
-                        int(match.group(2)),
-                        int(match.group(3))
+                    image_url = (
+                        media[0]["url"]
+                    )
+
+            elif entry.get(
+                "media_thumbnail"
+            ):
+
+                media = (
+                    entry.media_thumbnail
+                )
+
+                if (
+                    media
+                    and media[0].get("url")
+                ):
+
+                    image_url = (
+                        media[0]["url"]
                     )
 
             items.append(
                 Item(
-                    site="GameWatch",
+                    site="NookGaming",
                     category="interview",
                     title=title,
                     link=link,
@@ -141,7 +121,7 @@ def parse():
         except Exception as e:
 
             print(
-                f"[GameWatch] {e}"
+                f"[NookGaming] {e}"
             )
 
     return items

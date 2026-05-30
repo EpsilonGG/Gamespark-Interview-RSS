@@ -45,6 +45,8 @@ def debug_parser(module_name):
         print(f"link       : {item.link}")
         print(f"pub_date   : {item.pub_date}")
         print(f"image_url  : {item.image_url}")
+        print(type(item.pub_date))
+        print(item.pub_date.tzinfo)
 
         desc = item.description or ""
 

@@ -21,7 +21,15 @@ def parse_fourgamer():
 
     response.raise_for_status()
 
-    soup = BeautifulSoup(response.text, "lxml")
+    print(f"[4Gamer] encoding = {response.encoding}")
+    print(f"[4Gamer] apparent_encoding = {response.apparent_encoding}")
+
+    response.encoding = response.apparent_encoding
+
+    soup = BeautifulSoup(
+        response.text,
+        "lxml"
+    )
 
     articles = soup.select(
         'div[class*="V2_article_container"]'
@@ -35,6 +43,7 @@ def parse_fourgamer():
 
             # 标题
             title_el = article.select_one("h2 a")
+            print(f"[4Gamer] title = {title}")
 
             # 摘要
             desc_el = article.select_one(

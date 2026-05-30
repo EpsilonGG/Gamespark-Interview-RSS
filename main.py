@@ -77,6 +77,13 @@ except:
 # =====================
 
 all_items = load_all_items()
+for item in all_items:
+
+    if item.pub_date:
+
+        item.pub_date = item.pub_date.replace(
+            tzinfo=None
+        )
 print()
 print("===== DATETIME DEBUG =====")
 

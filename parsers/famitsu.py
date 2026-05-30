@@ -1,14 +1,16 @@
+import re
+from datetime import datetime, timedelta
+from urllib.parse import urljoin
+
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
-import re
 
 from models.item import Item
 
 
 URL = "https://www.famitsu.com/category/interview/page/1"
 
-headers = {
+HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -17,45 +19,71 @@ headers = {
 }
 
 
-def parse_relative_date(text):
+def parse_relative_date(text: str) -> datetime | None:
 
     text = text.strip()
 
-    # 例：3日前
-    match = re.search(r"(\d+)日前", text)
+    now = datetime.now()
 
-    if match:
-        days = int(match.group(1))
-        return datetime.now() - timedelta(days=days)
+    if text == "昨日":
+        return now - timedelta(days=1)
 
-    # 例：5時間前
-    match = re.search(r"(\d+)時間前", text)
+    if text == "一昨日":
+        return now - timedelta(days=2)
 
-    if match:
-        hours = int(match.group(1))
-        return datetime.now() - timedelta(hours=hours)
+    patterns = [
+        (r"(\d+)分前", "minutes"),
+        (r"(\d+)時間前", "hours"),
+        (r"(\d+)日前", "days"),
+        (r"(\d+)週間前", "weeks"),
+        (r"(\d+)(?:か月|ヶ月)前", "months"),
+        (r"(\d+)年前", "years"),
+    ]
 
-    # 例：20分前
-    match = re.search(r"(\d+)分前", text)
+    for pattern, unit in patterns:
 
-    if match:
-        minutes = int(match.group(1))
-        return datetime.now() - timedelta(minutes=minutes)
+        match = re.search(pattern, text)
+
+        if not match:
+            continue
+
+        value = int(match.group(1))
+
+        if unit == "minutes":
+            return now - timedelta(minutes=value)
+
+        if unit == "hours":
+            return now - timedelta(hours=value)
+
+        if unit == "days":
+            return now - timedelta(days=value)
+
+        if unit == "weeks":
+            return now - timedelta(weeks=value)
+
+        if unit == "months":
+            return now - timedelta(days=value * 30)
+
+        if unit == "years":
+            return now - timedelta(days=value * 365)
 
     return None
 
 
-def parse_famitsu():
+def parse():
 
     response = requests.get(
         URL,
-        headers=headers,
+        headers=HEADERS,
         timeout=30
     )
 
     response.raise_for_status()
 
-    soup = BeautifulSoup(response.text, "lxml")
+    soup = BeautifulSoup(
+        response.text,
+        "lxml"
+    )
 
     articles = soup.select(
         "div[class*='PrimaryCard_cardContainer'], "
@@ -68,39 +96,34 @@ def parse_famitsu():
 
         try:
 
-            # 标题
             title_el = article.select_one(
                 'a[class*="title"]'
-            )
-
-            # 摘要
-            desc_el = article.select_one(
-                'a[class*="lead"]'
-            )
-
-            # 时间
-            date_el = article.select_one(
-                'div[class*="date"] time'
-            )
-
-            # 图片
-            img_el = article.select_one(
-                'div[class*="media"] img'
             )
 
             if not title_el:
                 continue
 
-            # 标题
-            title = title_el.get_text(strip=True)
+            desc_el = article.select_one(
+                'a[class*="lead"]'
+            )
 
-            # 链接
-            link = title_el.get("href", "").strip()
+            date_el = article.select_one(
+                'div[class*="date"] time'
+            )
 
-            if link.startswith("/"):
-                link = "https://www.famitsu.com" + link
+            img_el = article.select_one(
+                'div[class*="media"] img'
+            )
 
-            # 摘要
+            title = title_el.get_text(
+                strip=True
+            )
+
+            link = urljoin(
+                "https://www.famitsu.com",
+                title_el.get("href", "")
+            )
+
             description = ""
 
             if desc_el:
@@ -109,7 +132,9 @@ def parse_famitsu():
                     strip=True
                 )
 
-            # 发布时间
+            if not description:
+                description = title
+
             pub_date = None
 
             if date_el:
@@ -122,7 +147,6 @@ def parse_famitsu():
                     raw_date
                 )
 
-            # 图片
             image_url = ""
 
             if img_el:
@@ -130,16 +154,15 @@ def parse_famitsu():
                 image_url = (
                     img_el.get("src")
                     or img_el.get("data-src")
+                    or img_el.get("data-original")
                     or ""
                 )
 
-                if image_url.startswith("/"):
-                    image_url = (
-                        "https://www.famitsu.com"
-                        + image_url
-                    )
+                image_url = urljoin(
+                    "https://www.famitsu.com",
+                    image_url
+                )
 
-            # 保存 Item
             items.append(
                 Item(
                     site="Famitsu",

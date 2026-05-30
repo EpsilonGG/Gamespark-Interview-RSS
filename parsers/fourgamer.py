@@ -1,28 +1,57 @@
+from datetime import datetime
+from urllib.parse import urljoin
+
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime
+
 from models.item import Item
 
 
 URL = "https://www.4gamer.net/indextop/all_interview_1.html"
 
-headers = {
+HEADERS = {
     "User-Agent": "Mozilla/5.0"
 }
 
 
-def parse_fourgamer():
+DATE_FORMATS = [
+    "%Y/%m/%d %H:%M",
+    "%Y/%m/%d",
+]
+
+
+def parse_date(text: str) -> datetime | None:
+
+    text = text.strip()
+
+    for fmt in DATE_FORMATS:
+
+        try:
+            return datetime.strptime(
+                text,
+                fmt
+            )
+
+        except ValueError:
+            pass
+
+    return None
+
+
+def parse():
 
     response = requests.get(
         URL,
-        headers=headers,
+        headers=HEADERS,
         timeout=30
     )
 
     response.raise_for_status()
 
-    # 4Gamer 使用 EUC-JP 编码
-    response.encoding = "euc_jp"
+    response.encoding = (
+        response.apparent_encoding
+        or "euc_jp"
+    )
 
     soup = BeautifulSoup(
         response.text,
@@ -39,43 +68,34 @@ def parse_fourgamer():
 
         try:
 
-            # 标题
-            title_el = article.select_one("h2 a")
-
-            # 摘要
-            desc_el = article.select_one(
-                'p[class*="lead_container"]'
-            )
-
-            # 时间
-            date_el = article.select_one(".timestamp")
-
-            # 图片
-            img_el = article.select_one(
-                'img[class*="img_right_top"]'
+            title_el = article.select_one(
+                "h2 a"
             )
 
             if not title_el:
                 continue
 
-            # 标题
+            desc_el = article.select_one(
+                'p[class*="lead_container"]'
+            )
+
+            date_el = article.select_one(
+                ".timestamp"
+            )
+
+            img_el = article.select_one(
+                'img[class*="img_right_top"]'
+            )
+
             title = title_el.get_text(
                 strip=True
             )
 
-            # 链接
-            link = title_el.get(
-                "href",
-                ""
-            ).strip()
+            link = urljoin(
+                "https://www.4gamer.net",
+                title_el.get("href", "")
+            )
 
-            if link.startswith("/"):
-                link = (
-                    "https://www.4gamer.net"
-                    + link
-                )
-
-            # 摘要
             description = ""
 
             if desc_el:
@@ -84,7 +104,9 @@ def parse_fourgamer():
                     strip=True
                 )
 
-            # 發布时间
+            if not description:
+                description = title
+
             pub_date = None
 
             if date_el:
@@ -93,18 +115,10 @@ def parse_fourgamer():
                     strip=True
                 )
 
-                try:
+                pub_date = parse_date(
+                    raw_date
+                )
 
-                    pub_date = datetime.strptime(
-                        raw_date,
-                        "%Y/%m/%d %H:%M"
-                    )
-
-                except Exception:
-
-                    pub_date = None
-
-            # 图片
             image_url = ""
 
             if img_el:
@@ -115,12 +129,10 @@ def parse_fourgamer():
                     or ""
                 )
 
-                if image_url.startswith("/"):
-
-                    image_url = (
-                        "https://www.4gamer.net"
-                        + image_url
-                    )
+                image_url = urljoin(
+                    "https://www.4gamer.net",
+                    image_url
+                )
 
             items.append(
                 Item(
@@ -138,7 +150,7 @@ def parse_fourgamer():
         except Exception as e:
 
             print(
-                f"[4Gamer] Error: {e}"
+                f"[4Gamer] Parse error: {e}"
             )
 
     return items

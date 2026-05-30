@@ -108,16 +108,23 @@ def parse():
                 description = title
 
             pub_date = None
-
             if date_el:
 
                 raw_date = date_el.get_text(
+                    " ",
                     strip=True
                 )
 
                 pub_date = parse_date(
                     raw_date
                 )
+
+                if pub_date is None:
+
+                    print(
+                        "[4Gamer] Date parse failed:",
+                        repr(raw_date)
+                    )
 
             image_url = ""
 

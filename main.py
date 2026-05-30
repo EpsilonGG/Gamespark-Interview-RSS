@@ -115,7 +115,10 @@ print()
 
 all_items.sort(
     key=lambda x: (
-        x.pub_date or datetime.min
+        x.pub_date
+        or datetime.min.replace(
+            tzinfo=timezone.utc
+        )
     ),
     reverse=True
 )

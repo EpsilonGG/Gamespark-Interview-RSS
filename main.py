@@ -77,6 +77,21 @@ except:
 # =====================
 
 all_items = load_all_items()
+print()
+print("===== DATETIME DEBUG =====")
+
+for item in all_items:
+
+    if item.pub_date:
+
+        print(
+            item.site,
+            item.pub_date,
+            item.pub_date.tzinfo
+        )
+
+print("===== END =====")
+print()
 
 
 # =====================

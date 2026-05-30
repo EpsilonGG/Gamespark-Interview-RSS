@@ -1,4 +1,5 @@
-from datetime import datetime
+import re
+from datetime import datetime, timezone
 from urllib.parse import urljoin
 
 import requests
@@ -22,18 +23,42 @@ DATE_FORMATS = [
 
 def parse_date(text: str) -> datetime | None:
 
+    if not text:
+        return None
+
     text = text.strip()
+
+    # 去掉全角方括号
+    text = text.replace("［", "").replace("］", "")
+
+    # 提取日期部分
+    match = re.search(
+        r"(\d{4}/\d{2}/\d{2}(?:\s+\d{2}:\d{2})?)",
+        text
+    )
+
+    if match:
+        text = match.group(1)
 
     for fmt in DATE_FORMATS:
 
         try:
-            return datetime.strptime(
+
+            dt = datetime.strptime(
                 text,
                 fmt
             )
 
+            return dt.replace(
+                tzinfo=timezone.utc
+            )
+
         except ValueError:
             pass
+
+    print(
+        f"[4Gamer] Date parse failed: '{text}'"
+    )
 
     return None
 

@@ -33,9 +33,11 @@ def parse():
 
     items = []
 
-    for article in soup.select(
+    articles = soup.select(
         "section.item"
-    )[:20]:
+    )
+
+    for article in articles:
 
         try:
 
@@ -108,7 +110,7 @@ def parse():
 
             if date_el:
 
-                raw = (
+                raw_date = (
                     date_el.get("datetime")
                     or date_el.get_text(
                         strip=True
@@ -117,18 +119,30 @@ def parse():
 
                 try:
 
-                    pub_date = (
-                        datetime.fromisoformat(
-                            raw.replace(
-                                "Z",
-                                "+00:00"
-                            )
+                    dt = datetime.fromisoformat(
+                        raw_date.replace(
+                            "Z",
+                            "+00:00"
                         )
                     )
 
-                except:
+                    # 统一转 naive datetime
+                    pub_date = dt.replace(
+                        tzinfo=None
+                    )
 
-                    pass
+                except Exception:
+
+                    try:
+
+                        pub_date = datetime.strptime(
+                            raw_date,
+                            "%Y.%m.%d %a %H:%M"
+                        )
+
+                    except Exception:
+
+                        pub_date = None
 
             items.append(
 
@@ -148,7 +162,7 @@ def parse():
         except Exception as e:
 
             print(
-                f"[GameSpark] {e}"
+                f"[Game*Spark] {e}"
             )
 
     return items

@@ -95,15 +95,15 @@ for item in all_items:
         
 print("===== DATETIME DEBUG =====")
 
-for item in all_items:
-
-    if item.pub_date:
-
-        print(
-            item.site,
-            item.pub_date,
-            item.pub_date.tzinfo
-        )
+print(
+    "4Gamer dated:",
+    sum(
+        1
+        for x in all_items
+        if x.site == "4Gamer"
+        and x.pub_date is not None
+    )
+)
 
 print("===== END =====")
 print()

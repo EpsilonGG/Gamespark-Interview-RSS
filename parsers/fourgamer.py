@@ -56,10 +56,6 @@ def parse_date(text: str) -> datetime | None:
         except ValueError:
             pass
 
-    print(
-        f"[4Gamer] Date parse failed: '{text}'"
-    )
-
     return None
 
 

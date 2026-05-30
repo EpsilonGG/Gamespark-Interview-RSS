@@ -43,7 +43,7 @@ def parse_fourgamer():
 
             # 标题
             title_el = article.select_one("h2 a")
-            print(f"[4Gamer] title = {title}")
+            
 
             # 摘要
             desc_el = article.select_one(
@@ -63,6 +63,7 @@ def parse_fourgamer():
 
             # 标题
             title = title_el.get_text(strip=True)
+            print(f"[4Gamer] title = {title}")
 
             # 链接
             link = title_el.get("href", "").strip()

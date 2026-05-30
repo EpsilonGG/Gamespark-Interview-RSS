@@ -2,7 +2,7 @@ import json
 import pkgutil
 import importlib
 
-from datetime import datetime
+from datetime import datetime, timezone
 from feedgen.feed import FeedGenerator
 
 
@@ -77,14 +77,22 @@ except:
 # =====================
 
 all_items = load_all_items()
+
+# =====================
+# Normalize datetime
+# =====================
+
 for item in all_items:
 
-    if item.pub_date:
+    if (
+        item.pub_date
+        and item.pub_date.tzinfo is None
+    ):
 
         item.pub_date = item.pub_date.replace(
-            tzinfo=None
+            tzinfo=timezone.utc
         )
-print()
+        
 print("===== DATETIME DEBUG =====")
 
 for item in all_items:

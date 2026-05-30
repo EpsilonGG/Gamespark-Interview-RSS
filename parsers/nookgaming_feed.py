@@ -1,52 +1,133 @@
-import feedparser
+import re
+
+import requests
+
 from bs4 import BeautifulSoup
 from datetime import datetime
+
 from models.item import Item
 
-FEED_URL = "https://www.nookgaming.com/feed/"
+
+URL = "https://game.watch.impress.co.jp/docs/interview/"
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0"
+}
 
 
-def clean_html(html):
-    soup = BeautifulSoup(html, "html.parser")
-    return soup.get_text(" ", strip=True)
+def parse():
 
+    response = requests.get(
+        URL,
+        headers=HEADERS,
+        timeout=30
+    )
 
-def parse_nookgaming_feed():
-    feed = feedparser.parse(FEED_URL)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(
+        response.text,
+        "lxml"
+    )
 
     items = []
 
-    for entry in feed.entries:
+    articles = soup.select(
+        "section.list ul.list-02 li.item.interview"
+    )
+
+    for article in articles:
+
         try:
-            title = entry.get("title", "").strip()
 
-            link = entry.get("link", "").strip()
+            title_el = article.select_one(
+                'p[class*="title"]'
+            )
 
-            description = ""
+            link_el = article.select_one(
+                'p[class*="title"] a'
+            )
 
-            if "summary" in entry:
-                description = clean_html(entry.summary)
+            if not title_el or not link_el:
+                continue
 
-                # 裁剪长度
-                description = description[:200]
+            title = title_el.get_text(
+                " ",
+                strip=True
+            )
 
-            pub_date = None
+            link = (
+                link_el.get("href", "")
+                .strip()
+            )
 
-            if "published_parsed" in entry:
-                pub_date = datetime(*entry.published_parsed[:6])
+            if link.startswith("/"):
+                link = (
+                    "https://game.watch.impress.co.jp"
+                    + link
+                )
+
+            desc_el = article.select_one(
+                'p[class*="outline"]'
+            )
+
+            description = (
+                desc_el.get_text(
+                    " ",
+                    strip=True
+                )
+                if desc_el
+                else ""
+            )
 
             image_url = ""
 
-            # WordPress media content
-            if "media_content" in entry:
-                media = entry.media_content
+            img_el = article.select_one(
+                'div[class*="image"] img'
+            )
 
-                if media and "url" in media[0]:
-                    image_url = media[0]["url"]
-                    
+            if img_el:
+
+                image_url = (
+                    img_el.get("src")
+                    or img_el.get("data-src")
+                    or ""
+                )
+
+                if image_url.startswith("/"):
+                    image_url = (
+                        "https://game.watch.impress.co.jp"
+                        + image_url
+                    )
+
+            pub_date = None
+
+            date_el = article.select_one(
+                'p[class*="date"]'
+            )
+
+            if date_el:
+
+                raw_date = date_el.get_text(
+                    strip=True
+                )
+
+                match = re.search(
+                    r"\((\d{4})/(\d{1,2})/(\d{1,2})\)",
+                    raw_date
+                )
+
+                if match:
+
+                    pub_date = datetime(
+                        int(match.group(1)),
+                        int(match.group(2)),
+                        int(match.group(3))
+                    )
+
             items.append(
                 Item(
-                    site="NookGaming",
+                    site="GameWatch",
                     category="interview",
                     title=title,
                     link=link,
@@ -57,8 +138,10 @@ def parse_nookgaming_feed():
                 )
             )
 
-
         except Exception as e:
-            print(f"[NookGaming Feed] Error: {e}")
+
+            print(
+                f"[GameWatch] {e}"
+            )
 
     return items

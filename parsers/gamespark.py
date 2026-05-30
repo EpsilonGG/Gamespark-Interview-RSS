@@ -1,101 +1,89 @@
 import requests
+
 from bs4 import BeautifulSoup
 from datetime import datetime
+
 from models.item import Item
 
 
-URL = "https://www.gamespark.jp/category/featured/interview/latest/"
+URL = (
+    "https://www.gamespark.jp/"
+    "category/featured/interview/latest/"
+)
 
-
-headers = {
+HEADERS = {
     "User-Agent": "Mozilla/5.0"
 }
 
 
-def parse_gamespark():
+def parse():
 
     response = requests.get(
         URL,
-        headers=headers,
+        headers=HEADERS,
         timeout=30
     )
 
     response.raise_for_status()
 
-    soup = BeautifulSoup(response.text, "lxml")
-
-    articles = soup.select("section.item")
+    soup = BeautifulSoup(
+        response.text,
+        "lxml"
+    )
 
     items = []
 
-    for article in articles[:20]:
+    for article in soup.select(
+        "section.item"
+    )[:20]:
 
         try:
 
-            # 标题
-            title_el = article.select_one(".title")
+            title_el = article.select_one(
+                ".title"
+            )
 
-            # 摘要
-            desc_el = article.select_one(".summary")
-
-            # 链接
-            link_el = article.select_one("a.link")
-
-            # 日期
-            date_el = article.select_one("time.date")
-
-            # 图片
-            img_el = article.select_one("img.figure")
+            link_el = article.select_one(
+                "a.link"
+            )
 
             if not title_el or not link_el:
                 continue
 
-            # 标题
-            title = title_el.get_text(strip=True)
+            title = title_el.get_text(
+                strip=True
+            )
 
-            # 链接
-            link = link_el.get("href", "").strip()
+            link = (
+                link_el.get("href", "")
+                .strip()
+            )
 
             if link.startswith("/"):
-                link = "https://www.gamespark.jp" + link
 
-            # 摘要
-            description = ""
+                link = (
+                    "https://www.gamespark.jp"
+                    + link
+                )
 
-            if desc_el:
-                description = desc_el.get_text(
+            desc_el = article.select_one(
+                ".summary"
+            )
+
+            description = (
+                desc_el.get_text(
                     " ",
                     strip=True
                 )
+                if desc_el
+                else ""
+            )
 
-            # 发布时间
-            pub_date = None
-
-            if date_el:
-
-                raw_date = (
-                    date_el.get("datetime")
-                    or date_el.get_text(strip=True)
-                )
-
-                try:
-                    pub_date = datetime.fromisoformat(
-                        raw_date.replace("Z", "+00:00")
-                    )
-
-                except:
-
-                    try:
-                        pub_date = datetime.strptime(
-                            raw_date,
-                            "%Y.%m.%d %a %H:%M"
-                        )
-
-                    except:
-                        pub_date = None
-
-            # 图片
             image_url = ""
+
+            img_el = article.select_one(
+                "img.figure"
+            )
 
             if img_el:
 
@@ -106,13 +94,44 @@ def parse_gamespark():
                 )
 
                 if image_url.startswith("/"):
+
                     image_url = (
                         "https://www.gamespark.jp"
                         + image_url
                     )
 
-            # 保存 Item
+            pub_date = None
+
+            date_el = article.select_one(
+                "time.date"
+            )
+
+            if date_el:
+
+                raw = (
+                    date_el.get("datetime")
+                    or date_el.get_text(
+                        strip=True
+                    )
+                )
+
+                try:
+
+                    pub_date = (
+                        datetime.fromisoformat(
+                            raw.replace(
+                                "Z",
+                                "+00:00"
+                            )
+                        )
+                    )
+
+                except:
+
+                    pass
+
             items.append(
+
                 Item(
                     site="Game*Spark",
                     category="interview",
@@ -123,10 +142,13 @@ def parse_gamespark():
                     pub_date=pub_date,
                     tags=[]
                 )
+
             )
 
         except Exception as e:
 
-            print("[Game*Spark] Parse Error:", e)
+            print(
+                f"[GameSpark] {e}"
+            )
 
     return items
